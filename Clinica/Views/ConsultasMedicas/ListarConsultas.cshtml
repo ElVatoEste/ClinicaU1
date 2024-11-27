@@ -1,0 +1,133 @@
+﻿@model Clinica.ViewModels.ConsultasMedicasListViewModel
+
+<div class="container mt-5">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Consultas Médicas</h2>
+        <div>
+            <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#crearConsultaModal">
+                <i class="bi bi-plus"></i> Nueva Consulta
+            </button>
+            <a asp-controller="Pacientes" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Expedientes
+            </a>
+        </div>
+    </div>
+
+    <!-- Información del Expediente -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Expediente ID: <span class="text-primary">@Model.ExpedienteID</span></h5>
+            <p class="card-text">Revise y gestione las consultas médicas asociadas a este expediente.</p>
+        </div>
+    </div>
+
+    <!-- Tabla de Consultas Médicas -->
+    @if (Model.Consultas.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>ID Consulta</th>
+                        <th>Fecha</th>
+                        <th>Tipo de Consulta</th>
+                        <th>Signos Vitales</th>
+                        <th>Diagnóstico</th>
+                        <th>Evaluación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var consulta in Model.Consultas)
+                    {
+                        <tr>
+                            <td class="text-center">@consulta.ConsultaMedicaID</td>
+                            <td class="text-center">@consulta.Fecha.ToShortDateString()</td>
+                            <td>@consulta.TipoConsulta</td>
+                            <td class="text-center">
+                                @if (consulta.SignosVitalesID.HasValue)
+                                {
+                                    <a asp-action="DetallesSignosVitales" asp-route-id="@consulta.SignosVitalesID" class="btn btn-outline-info btn-sm">
+                                        <i class="bi bi-eye"></i> Ver Signos
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No registrados</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (consulta.DiagnosticoID.HasValue)
+                                {
+                                    <a asp-action="DetallesDiagnostico" asp-route-id="@consulta.DiagnosticoID" class="btn btn-outline-info btn-sm">
+                                        <i class="bi bi-eye"></i> Ver Diagnóstico
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No diagnosticado</span>
+                                }
+                            </td>
+                            <td>@consulta.EvaluacionMedica</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-circle"></i> No se encontraron consultas médicas para este expediente.
+        </div>
+    }
+
+    <!-- Modal para Crear Consulta Médica -->
+    <div class="modal fade" id="crearConsultaModal" tabindex="-1" aria-labelledby="crearConsultaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="crearConsultaModalLabel">Nueva Consulta Médica</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="CrearConsultaMedica" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <input type="hidden" name="ExpedienteID" value="@Model.ExpedienteID" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="FechaSignosVitales" class="form-label">Fecha de Signos Vitales</label>
+                                <input type="date" class="form-control" id="FechaSignosVitales" name="FechaSignosVitales" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="Presion" class="form-label">Presión</label>
+                                <input type="text" class="form-control" id="Presion" name="Presion" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="Pulso" class="form-label">Pulso</label>
+                                <input type="text" class="form-control" id="Pulso" name="Pulso" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="Temperatura" class="form-label">Temperatura</label>
+                                <input type="text" class="form-control" id="Temperatura" name="Temperatura" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label for="TipoConsulta" class="form-label">Tipo de Consulta</label>
+                                <input type="text" class="form-control" id="TipoConsulta" name="TipoConsulta" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label for="EvaluacionMedica" class="form-label">Evaluación Médica</label>
+                                <textarea class="form-control" id="EvaluacionMedica" name="EvaluacionMedica" rows="3" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Consulta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

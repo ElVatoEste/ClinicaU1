@@ -1,0 +1,26 @@
+﻿@model List<Clinica.ViewModels.Card>
+
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Bienvenido al Sistema de Gestión</h2>
+    <div class="row justify-content-center">
+        @foreach (var card in Model)
+        {
+            <div class="col-md-4">
+                <div class="card text-white bg-gradient mb-4 shadow-lg" style="border-radius: 15px;">
+                    <div class="card-header text-center" style="background-color: #007bff; border-radius: 15px 15px 0 0;">
+                        <i class="@card.Icon fa-4x"></i>
+                    </div>
+                    <div class="card-body bg-white text-dark text-center" style="border-radius: 0 0 15px 15px;">
+                        <h5 class="card-title fw-bold">@card.Title</h5>
+                        <p class="card-text">@card.Description</p>
+                        <a href="@card.Link" class="btn btn-primary w-100" style="border-radius: 10px;">Ir</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

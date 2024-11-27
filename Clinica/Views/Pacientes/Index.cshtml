@@ -1,0 +1,197 @@
+﻿@model Clinica.ViewModels.PacienteGestionViewModel
+
+<div class="container mt-5">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Gestión de Pacientes</h2>
+        <div>
+            <button class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#modalRegistrar">
+                <i class="bi bi-person-plus"></i> Registrar Paciente
+            </button>
+            <button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+                <i class="bi bi-funnel"></i> Filtros
+            </button>
+        </div>
+    </div>
+
+    <!-- Formulario de búsqueda opcional -->
+    <div class="collapse" id="filterCollapse">
+        <div class="card card-body mb-4">
+            <h5 class="card-title">Filtros de Búsqueda</h5>
+            <form asp-action="Buscar" method="post">
+                @Html.AntiForgeryToken() <!-- Protección CSRF -->
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="NombreBusqueda" class="form-label">Nombre</label>
+                        <input asp-for="NombreBusqueda" class="form-control" placeholder="Nombre" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="ApellidoBusqueda" class="form-label">Apellido</label>
+                        <input asp-for="ApellidoBusqueda" class="form-control" placeholder="Apellido" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="FechaNacimientoBusqueda" class="form-label">Fecha de Nacimiento</label>
+                        <input asp-for="FechaNacimientoBusqueda" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="IdentificacionBusqueda" class="form-label">Identificación</label>
+                        <input asp-for="IdentificacionBusqueda" class="form-control" placeholder="Identificación" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Buscar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de resultados -->
+    @if (Model.Pacientes.Any())
+    {
+        <h3 class="mt-4">Resultados</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>ID Expediente</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Identificación</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Dirección</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var paciente in Model.Pacientes)
+                    {
+                        <tr>
+                            <td class="text-center">@paciente.ExpedienteID</td>
+                            <td>@paciente.Nombre</td>
+                            <td>@paciente.Apellido</td>
+                            <td>@paciente.Identificacion</td>
+                            <td class="text-center">@paciente.FechaNacimiento.ToShortDateString()</td>
+                            <td>@paciente.Direccion</td>
+                            <td>@paciente.Telefono</td>
+                            <td>@paciente.Correo</td>
+                            <td class="text-center">
+                                <a asp-controller="ConsultasMedicas" asp-action="ListarConsultas" asp-route-expedienteId="@paciente.ExpedienteID" class="btn btn-outline-info btn-sm">
+                                    <i class="bi bi-eye"></i> Consultas
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning mt-4" role="alert">
+            <i class="bi bi-exclamation-circle"></i> No se encontraron pacientes con los filtros ingresados.
+        </div>
+    }
+
+    <!-- Modal para registrar pacientes -->
+    <div class="modal fade" id="modalRegistrar" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalRegistrarLabel">Registrar Paciente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="Registrar" method="post">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <!-- Primera fila -->
+                            <div class="col-md-4">
+                                <label asp-for="Nombre" class="form-label">Nombre</label>
+                                <input asp-for="Nombre" class="form-control" placeholder="Nombre" required />
+                                <span asp-validation-for="Nombre" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Apellido" class="form-label">Apellido</label>
+                                <input asp-for="Apellido" class="form-control" placeholder="Apellido" required />
+                                <span asp-validation-for="Apellido" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Identificacion" class="form-label">Identificación</label>
+                                <input asp-for="Identificacion" class="form-control" placeholder="Identificación" required />
+                                <span asp-validation-for="Identificacion" class="text-danger"></span>
+                            </div>
+                            <!-- Segunda fila -->
+                            <div class="col-md-4">
+                                <label asp-for="FechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                                <input asp-for="FechaNacimiento" type="date" class="form-control" required />
+                                <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Sexo" class="form-label">Sexo</label>
+                                <select asp-for="Sexo" class="form-select" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                                <span asp-validation-for="Sexo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="EstadoCivil" class="form-label">Estado Civil</label>
+                                <select asp-for="EstadoCivil" class="form-select" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Soltero/a">Soltero/a</option>
+                                    <option value="Casado/a">Casado/a</option>
+                                    <option value="Viudo/a">Viudo/a</option>
+                                    <option value="Divorciado/a">Divorciado/a</option>
+                                </select>
+                                <span asp-validation-for="EstadoCivil" class="text-danger"></span>
+                            </div>
+                            <!-- Tercera fila -->
+                            <div class="col-md-4">
+                                <label asp-for="Direccion" class="form-label">Dirección</label>
+                                <input asp-for="Direccion" class="form-control" placeholder="Dirección" required />
+                                <span asp-validation-for="Direccion" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Telefono" class="form-label">Teléfono</label>
+                                <input asp-for="Telefono" class="form-control" placeholder="Teléfono" required />
+                                <span asp-validation-for="Telefono" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Correo" class="form-label">Correo</label>
+                                <input asp-for="Correo" type="email" class="form-control" placeholder="Correo" required />
+                                <span asp-validation-for="Correo" class="text-danger"></span>
+                            </div>
+                            <!-- Cuarta fila -->
+                            <div class="col-md-4">
+                                <label asp-for="Contacto" class="form-label">Contacto</label>
+                                <input asp-for="Contacto" class="form-control" placeholder="Contacto" required />
+                                <span asp-validation-for="Contacto" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="NombreResp" class="form-label">Nombre del Res   onsable</label>
+                                <input asp-for="NombreResp" class="form-control" placeholder="Nombre del Responsable" required />
+                                <span asp-validation-for="NombreResp" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ParentescoResp" class="form-label">Parentesco del Responsable</label>
+                                <input asp-for="ParentescoResp" class="form-control" placeholder="Parentesco del Responsable" required />
+                                <span asp-validation-for="ParentescoResp" class="text-danger"></span>
+                            </div>
+                            <!-- Quinta fila -->
+                            <div class="col-md-4">
+                                <label asp-for="ContactoResp" class="form-label">Contacto del Responsable</label>
+                                <input asp-for="ContactoResp" class="form-control" placeholder="Contacto del Responsable" required />
+                                <span asp-validation-for="ContactoResp" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

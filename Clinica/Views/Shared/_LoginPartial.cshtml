@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@if (!HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+{
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+        </li>
+    </ul>
+}
+else
+{
+    <div class="d-flex align-items-center ms-auto">
+        <span class="me-3">Bienvenido, @HttpContextAccessor.HttpContext.User.Identity.Name</span>
+        <form method="post" asp-controller="Account" asp-action="Logout" class="d-inline">
+            <button class="btn btn-danger btn-sm" type="submit">Logout</button>
+        </form>
+    </div>
+}
+

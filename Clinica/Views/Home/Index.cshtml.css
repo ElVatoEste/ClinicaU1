@@ -1,0 +1,14 @@
+﻿.card.bg-gradient {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: white;
+}
+
+.card .btn-primary {
+    background-color: #00c6ff;
+    border: none;
+}
+
+    .card .btn-primary:hover {
+        background-color: #007bff;
+        color: white;
+    }
