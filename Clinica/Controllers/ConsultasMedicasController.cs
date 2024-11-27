@@ -46,6 +46,85 @@ namespace Clinica.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> DetallesDiagnostico(int consultaId)
+        {
+            var parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@DiagnosticoID", consultaId)
+            };
+
+            DiagnosticoViewModel diagnostico;
+
+            try
+            {
+                diagnostico = await _helper.ExecSingleRow<DiagnosticoViewModel>("Obtener_Diagnostico", parameters);
+
+                if (diagnostico == null)
+                {
+                    return NotFound(new { message = "El diagnóstico no existe." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Error al obtener el diagnóstico: {ex.Message}" });
+            }
+
+            return Json(diagnostico);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerSignosVitales(int id)
+        {
+            var parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@SignosVitalesID", id)
+            };
+
+            SignosVitalesViewModel signosVitales;
+
+            try
+            {
+                signosVitales = await _helper.ExecSingleRow<SignosVitalesViewModel>("Obtener_SignosVitales", parameters);
+
+                if (signosVitales == null)
+                {
+                    return NotFound(new { message = "Los signos vitales no existen." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Error al obtener los signos vitales: {ex.Message}" });
+            }
+
+            return Json(signosVitales);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RegistrarDiagnostico(int consultaId, int expedienteId, string descripcion)
+        {
+            var parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@ConsultaMedicaID", consultaId),
+                    new SqlParameter("@Descripcion", descripcion)
+                };
+
+            try
+            {
+                await _helper.ExecNonQuery("Registrar_Diagnostico", parameters);
+                TempData["Success"] = "Diagnóstico registrado y asociado exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error al registrar el diagnóstico: {ex.Message}";
+            }
+
+            return RedirectToAction("ListarConsultas", new { expedienteId });
+        }
+
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CrearConsultaMedica(CrearConsultaMedicaViewModel model)

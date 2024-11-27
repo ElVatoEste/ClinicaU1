@@ -47,9 +47,10 @@
                             <td class="text-center">
                                 @if (consulta.SignosVitalesID.HasValue)
                                 {
-                                    <a asp-action="DetallesSignosVitales" asp-route-id="@consulta.SignosVitalesID" class="btn btn-outline-info btn-sm">
-                                        <i class="bi bi-eye"></i> Ver Signos
-                                    </a>
+                                    <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#signosVitalesModal"
+                                            onclick="cargarSignosVitales(@consulta.SignosVitalesID)">
+                                        <i class="bi bi-heart-pulse"></i> Ver Signos
+                                    </button>
                                 }
                                 else
                                 {
@@ -59,13 +60,23 @@
                             <td class="text-center">
                                 @if (consulta.DiagnosticoID.HasValue)
                                 {
-                                    <a asp-action="DetallesDiagnostico" asp-route-id="@consulta.DiagnosticoID" class="btn btn-outline-info btn-sm">
+                                    <!-- Ver detalles del diagnóstico -->
+                                    <button class="btn btn-outline-info btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#diagnosticoModal"
+                                            onclick="cargarDiagnostico(@consulta.DiagnosticoID, @consulta.ConsultaMedicaID, @Model.ExpedienteID, false)">
                                         <i class="bi bi-eye"></i> Ver Diagnóstico
-                                    </a>
+                                    </button>
                                 }
                                 else
                                 {
-                                    <span class="text-muted">No diagnosticado</span>
+                                    <!-- Agregar diagnóstico -->
+                                    <button class="btn btn-outline-primary btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#diagnosticoModal"
+                                            onclick="cargarDiagnostico(null, @consulta.ConsultaMedicaID, @Model.ExpedienteID, true)">
+                                        <i class="bi bi-plus-circle"></i> Agregar Diagnóstico
+                                    </button>
                                 }
                             </td>
                             <td>@consulta.EvaluacionMedica</td>
@@ -130,4 +141,124 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="diagnosticoModal" tabindex="-1" aria-labelledby="diagnosticoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="diagnosticoModalLabel">Diagnóstico</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formDiagnostico" asp-action="RegistrarDiagnostico" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="expedienteId" name="expedienteId" value="@Model.ExpedienteID" />
+                    <input type="hidden" id="consultaId" name="consultaId" />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción del Diagnóstico</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" id="guardarDiagnosticoBtn" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="signosVitalesModal" tabindex="-1" aria-labelledby="signosVitalesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="signosVitalesModalLabel">Signos Vitales</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Fecha:</strong> <span id="signosFecha" class="text-muted">Cargando...</span></p>
+                    <p><strong>Presión:</strong> <span id="signosPresion" class="text-muted">Cargando...</span></p>
+                    <p><strong>Pulso:</strong> <span id="signosPulso" class="text-muted">Cargando...</span></p>
+                    <p><strong>Temperatura:</strong> <span id="signosTemperatura" class="text-muted">Cargando...</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+@section Scripts {
+    <script>
+        function cargarDiagnostico(diagnosticoId, consultaId, expedienteId, esNuevo) {
+            const descripcionInput = document.getElementById("descripcion");
+            const guardarBtn = document.getElementById("guardarDiagnosticoBtn");
+            const modalLabel = document.getElementById("diagnosticoModalLabel");
+            const consultaIdInput = document.getElementById("consultaId");
+            const expedienteIdInput = document.getElementById("expedienteId");
+
+            if (!descripcionInput || !guardarBtn || !modalLabel || !consultaIdInput || !expedienteIdInput) {
+                console.error("Elementos del modal no encontrados. Revisa el HTML.");
+                return;
+            }
+
+            if (esNuevo) {
+                // Configurar el modal para agregar un nuevo diagnóstico
+                modalLabel.textContent = "Agregar Diagnóstico";
+                descripcionInput.value = "";
+                descripcionInput.disabled = false; // Habilitar para edición
+                guardarBtn.style.display = "block"; // Mostrar botón Guardar
+                consultaIdInput.value = consultaId; // Asignar el ID de la consulta
+                expedienteIdInput.value = expedienteId; // Asignar el ID del expediente
+            } else {
+                // Cargar los datos del diagnóstico existente
+                const url = `@Url.Action("DetallesDiagnostico", "ConsultasMedicas")?consultaId=${diagnosticoId}`;
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("No se pudo cargar el diagnóstico.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Configurar el modal para observar el diagnóstico
+                        modalLabel.textContent = "Detalles del Diagnóstico";
+                        descripcionInput.value = data.descripcion;
+                        descripcionInput.disabled = true; // Deshabilitar para solo observar
+                        guardarBtn.style.display = "none"; // Ocultar botón Guardar
+                        consultaIdInput.value = consultaId;
+                        expedienteIdInput.value = expedienteId;
+                    })
+                    .catch(error => {
+                        console.error("Error al cargar el diagnóstico:", error);
+                        alert("Error al cargar el diagnóstico.");
+                    });
+            }
+        }
+    </script>
+    <script>
+        function cargarSignosVitales(signosVitalesId) {
+            const url = `@Url.Action("ObtenerSignosVitales", "ConsultasMedicas")?id=${signosVitalesId}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("No se pudieron cargar los signos vitales.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("signosFecha").textContent = new Date(data.fecha).toLocaleDateString();
+                    document.getElementById("signosPresion").textContent = data.presion;
+                    document.getElementById("signosPulso").textContent = data.pulso;
+                    document.getElementById("signosTemperatura").textContent = data.temperatura;
+                })
+                .catch(error => {
+                    console.error(error);
+                    document.getElementById("signosFecha").textContent = "Error al cargar.";
+                    document.getElementById("signosPresion").textContent = "Error al cargar.";
+                    document.getElementById("signosPulso").textContent = "Error al cargar.";
+                    document.getElementById("signosTemperatura").textContent = "Error al cargar.";
+                });
+        }
+    </script>
+}
