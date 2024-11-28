@@ -1,8 +1,17 @@
 ﻿@model Clinica.ViewModels.RecetaViewModel
 
 <div class="container mt-5">
-    <h2 class="text-primary">Receta</h2>
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Detalle de la Receta</h2>
+        <div>
+            <a asp-controller="ConsultasMedicas" asp-action="ListarConsultas" asp-route-expedienteId="@Model.ExpedienteID" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Consultas
+            </a>
+        </div>
+    </div>
 
+    <!-- Información de la receta -->
     <div class="mb-3">
         <strong>Diagnóstico ID:</strong> @Model.DiagnosticoID <br />
         <strong>Fecha:</strong> @Model.Fecha.ToShortDateString()
@@ -18,6 +27,8 @@
                         <th>Descripción</th>
                         <th>Cantidad</th>
                         <th>Precio Base</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,10 +37,25 @@
                         <tr>
                             <td>@detalle.Nombre</td>
                             <td>@detalle.Descripcion</td>
-                            <td>@detalle.Cantidad</td>
-                            <td>@detalle.PrecioBase</td>
+                            <td class="text-center">@detalle.Cantidad</td>
+                            <td class="text-end">@detalle.PrecioBase.ToString("C")</td>
+                            <td class="text-end">@((detalle.PrecioBase * detalle.Cantidad).ToString("C"))</td>
+                            <td class="text-center">
+                                <form asp-action="EliminarMedicamento" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="recetaId" value="@Model.RecetaID" />
+                                    <input type="hidden" name="medicamentoId" value="@detalle.MedicamentoID" />
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este medicamento?');">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     }
+                    <tr class="fw-bold text-end">
+                        <td colspan="4">Total:</td>
+                        <td colspan="2">@Model.DetallesReceta.Sum(d => d.PrecioBase * d.Cantidad).ToString("C")</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -41,10 +67,12 @@
         </div>
     }
 
+    <!-- Botón para abrir el modal -->
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarMedicamentoModal">
         <i class="bi bi-plus"></i> Agregar Medicamento
     </button>
 </div>
+
 
 <!-- Modal para agregar medicamentos -->
 <div class="modal fade" id="agregarMedicamentoModal" tabindex="-1" aria-labelledby="agregarMedicamentoModalLabel" aria-hidden="true">
@@ -56,12 +84,12 @@
             </div>
             <form asp-action="AgregarMedicamento" method="post">
                 @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="RecetaID" value="@Model.RecetaID" />
-                <input type="hidden" asp-for="DiagnosticoID" value="@Model.DiagnosticoID" />
+                <input type="hidden" name="RecetaID" value="@Model.RecetaID" />
+                <input type="hidden" name="DiagnosticoID" value="@Model.DiagnosticoID" />
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="MedicamentoID" class="form-label">Medicamento</label>
-                        <select asp-for="NuevoMedicamento.MedicamentoID" class="form-select" required>
+                        <select name="MedicamentoID" id="MedicamentoID" class="form-select" required>
                             <option value="">Seleccione un medicamento</option>
                             @foreach (var medicamento in Model.MedicamentosDisponibles)
                             {
@@ -71,7 +99,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="Cantidad" class="form-label">Cantidad</label>
-                        <input asp-for="NuevoMedicamento.Cantidad" class="form-control" type="number" min="1" required />
+                        <input type="number" id="Cantidad" name="Cantidad" class="form-control" min="1" required />
                     </div>
                 </div>
                 <div class="modal-footer">

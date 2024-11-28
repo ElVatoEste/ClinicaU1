@@ -4,15 +4,35 @@
     <h2 class="text-primary">Crear Nueva Receta</h2>
     <form asp-action="CrearReceta" method="post">
         @Html.AntiForgeryToken()
+
+        <!-- Campo oculto para el DiagnosticoID -->
         <input type="hidden" asp-for="DiagnosticoID" />
 
+        <!-- Campo para la Fecha -->
         <div class="mb-3">
-            <label asp-for="Fecha" class="form-label">Fecha</label>
+            <label asp-for="Fecha" class="form-label fw-bold">Fecha</label>
             <input asp-for="Fecha" class="form-control" type="date" />
             <span asp-validation-for="Fecha" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Guardar Receta</button>
-        <a asp-action="VerReceta" asp-route-diagnosticoId="@Model.DiagnosticoID" class="btn btn-secondary">Cancelar</a>
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Guardar Receta
+            </button>
+            <a asp-action="VerReceta" asp-route-diagnosticoId="@Model.DiagnosticoID" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Cancelar
+            </a>
+        </div>
     </form>
 </div>
+
+<style>
+    .container h2 {
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        min-width: 120px;
+    }
+</style>
