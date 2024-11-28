@@ -1,0 +1,18 @@
+﻿@model Clinica.ViewModels.CrearRecetaViewModel
+
+<div class="container mt-5">
+    <h2 class="text-primary">Crear Nueva Receta</h2>
+    <form asp-action="CrearReceta" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="DiagnosticoID" />
+
+        <div class="mb-3">
+            <label asp-for="Fecha" class="form-label">Fecha</label>
+            <input asp-for="Fecha" class="form-control" type="date" />
+            <span asp-validation-for="Fecha" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Receta</button>
+        <a asp-action="VerReceta" asp-route-diagnosticoId="@Model.DiagnosticoID" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

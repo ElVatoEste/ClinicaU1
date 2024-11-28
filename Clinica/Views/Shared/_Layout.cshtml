@@ -9,6 +9,21 @@
     <link rel="stylesheet" href="~/Clinica.styles.css" asp-append-version="true" />
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* Estilo para notificaciones flotantes */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            max-width: 300px;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -35,13 +50,20 @@
                                 <i class="bi bi-people-fill me-1"></i> Pacientes
                             </a>
                         </li>
-                        <!-- Puedes agregar más enlaces aquí -->
+                        <!-- Enlace a Medicamentos -->
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Medicamentos" ? "active" : "")"
+                               asp-area="" asp-controller="Medicamentos" asp-action="Index">
+                                <i class="bi bi-capsule-pill me-1"></i> Medicamentos
+                            </a>
+                        </li>
                     </ul>
-                    <partial name="_LoginPartial" /> <!-- Aquí se incluye el parcial -->
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -53,9 +75,51 @@
             &copy; 2024 - Clinica - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    <!-- Contenedor de notificaciones flotantes -->
+    <div class="notification-container">
+        @if (TempData["Error"] != null)
+        {
+            <div id="tempDataError" class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div id="tempDataSuccess" class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // Ocultar automáticamente las notificaciones después de 3 segundos
+        document.addEventListener("DOMContentLoaded", function () {
+            const successNotification = document.getElementById("tempDataSuccess");
+            const errorNotification = document.getElementById("tempDataError");
+
+            if (successNotification) {
+                setTimeout(() => {
+                    successNotification.classList.add("fade-out");
+                    setTimeout(() => successNotification.remove(), 500);
+                }, 3000);
+            }
+
+            if (errorNotification) {
+                setTimeout(() => {
+                    errorNotification.classList.add("fade-out");
+                    setTimeout(() => errorNotification.remove(), 500);
+                }, 3000);
+            }
+        });
+    </script>
 </body>
 </html>

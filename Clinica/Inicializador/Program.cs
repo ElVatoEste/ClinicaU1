@@ -55,7 +55,7 @@ app.UseAuthorization();  // Middleware de autorización
 // Rutas
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Home}/{action=Index}");
 
 // Ejecutar la aplicación
 app.Run();

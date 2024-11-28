@@ -159,8 +159,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="submit" id="guardarDiagnosticoBtn" class="btn btn-primary">Guardar</button>
+                        <a id="verRecetasBtn" href="#" class="btn btn-success" style="display: none;">
+                            <i class="bi bi-journal-text"></i> Ver Recetas
+                        </a>
                     </div>
                 </form>
             </div>
@@ -194,8 +197,9 @@
             const modalLabel = document.getElementById("diagnosticoModalLabel");
             const consultaIdInput = document.getElementById("consultaId");
             const expedienteIdInput = document.getElementById("expedienteId");
+            const verRecetasBtn = document.getElementById("verRecetasBtn"); // Botón para redirigir a recetas
 
-            if (!descripcionInput || !guardarBtn || !modalLabel || !consultaIdInput || !expedienteIdInput) {
+            if (!descripcionInput || !guardarBtn || !modalLabel || !consultaIdInput || !expedienteIdInput || !verRecetasBtn) {
                 console.error("Elementos del modal no encontrados. Revisa el HTML.");
                 return;
             }
@@ -208,6 +212,7 @@
                 guardarBtn.style.display = "block"; // Mostrar botón Guardar
                 consultaIdInput.value = consultaId; // Asignar el ID de la consulta
                 expedienteIdInput.value = expedienteId; // Asignar el ID del expediente
+                verRecetasBtn.style.display = "none"; // Ocultar botón Ver Recetas
             } else {
                 // Cargar los datos del diagnóstico existente
                 const url = `@Url.Action("DetallesDiagnostico", "ConsultasMedicas")?consultaId=${diagnosticoId}`;
@@ -227,6 +232,10 @@
                         guardarBtn.style.display = "none"; // Ocultar botón Guardar
                         consultaIdInput.value = consultaId;
                         expedienteIdInput.value = expedienteId;
+
+                        // Generar el enlace a las recetas usando Razor para garantizar la ruta correcta
+                        verRecetasBtn.href = `@Url.Action("VerReceta", "Recetas")?diagnosticoId=${diagnosticoId}`;
+                        verRecetasBtn.style.display = "block"; // Mostrar botón de Ver Recetas
                     })
                     .catch(error => {
                         console.error("Error al cargar el diagnóstico:", error);

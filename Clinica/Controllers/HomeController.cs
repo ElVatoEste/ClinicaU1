@@ -6,11 +6,17 @@ using Clinica.ViewModels;
 
 namespace Clinica.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
+            // Verificar si el usuario está autenticado
+            if (!User.Identity.IsAuthenticated)
+            {
+                // Si no está autenticado, redirigir al login
+                return RedirectToAction("Login", "Account");
+            }
+
             // Lista de tarjetas configuradas para renderización dinámica
             var cards = new List<Card>
             {
@@ -24,26 +30,18 @@ namespace Clinica.Controllers
                 },
                 new Card
                 {
-                    Title = "Citas Médicas",
-                    Description = "Gestión y seguimiento de citas.",
-                    Icon = "fas fa-calendar-check",
-                    Link = "/Citas/Index",
-                    Roles = new List<string> { "Usuario", "Empleado" }
-                },
-                new Card
-                {
-                    Title = "Reportes",
-                    Description = "Ver reportes e indicadores del sistema.",
-                    Icon = "fas fa-chart-line",
-                    Link = "/Reportes/Index",
-                    Roles = new List<string> { "Empleado" }
-                },
-                new Card
-                {
                     Title = "Gestión de Pacientes",
                     Description = "Registrar y buscar pacientes en el sistema.",
                     Icon = "fas fa-procedures",
                     Link = "/Pacientes/Index",
+                    Roles = new List<string> { "Empleado" }
+                },
+                new Card
+                {
+                    Title = "Gestión de Medicamentos",
+                    Description = "Registrar y administrar medicamentos.",
+                    Icon = "fas fa-capsules",
+                    Link = "/Medicamentos/Index",
                     Roles = new List<string> { "Empleado" }
                 }
             };
@@ -57,6 +55,7 @@ namespace Clinica.Controllers
             // Renderizar las tarjetas autorizadas
             return View(filteredCards);
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -18,6 +18,12 @@ namespace Clinica.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                // Si el usuario ya está autenticado, redirigir al Home
+                return RedirectToAction("Index", "Home");
+            }
+
             return View();
         }
 

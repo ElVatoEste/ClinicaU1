@@ -1,0 +1,84 @@
+﻿@model Clinica.ViewModels.RecetaViewModel
+
+<div class="container mt-5">
+    <h2 class="text-primary">Receta</h2>
+
+    <div class="mb-3">
+        <strong>Diagnóstico ID:</strong> @Model.DiagnosticoID <br />
+        <strong>Fecha:</strong> @Model.Fecha.ToShortDateString()
+    </div>
+
+    @if (Model.DetallesReceta.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>Medicamento</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Precio Base</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in Model.DetallesReceta)
+                    {
+                        <tr>
+                            <td>@detalle.Nombre</td>
+                            <td>@detalle.Descripcion</td>
+                            <td>@detalle.Cantidad</td>
+                            <td>@detalle.PrecioBase</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-circle"></i> No se encontraron medicamentos en la receta.
+        </div>
+    }
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarMedicamentoModal">
+        <i class="bi bi-plus"></i> Agregar Medicamento
+    </button>
+</div>
+
+<!-- Modal para agregar medicamentos -->
+<div class="modal fade" id="agregarMedicamentoModal" tabindex="-1" aria-labelledby="agregarMedicamentoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="agregarMedicamentoModalLabel">Agregar Medicamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AgregarMedicamento" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="RecetaID" value="@Model.RecetaID" />
+                <input type="hidden" asp-for="DiagnosticoID" value="@Model.DiagnosticoID" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="MedicamentoID" class="form-label">Medicamento</label>
+                        <select asp-for="NuevoMedicamento.MedicamentoID" class="form-select" required>
+                            <option value="">Seleccione un medicamento</option>
+                            @foreach (var medicamento in Model.MedicamentosDisponibles)
+                            {
+                                <option value="@medicamento.MedicamentoID">@medicamento.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Cantidad" class="form-label">Cantidad</label>
+                        <input asp-for="NuevoMedicamento.Cantidad" class="form-control" type="number" min="1" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
