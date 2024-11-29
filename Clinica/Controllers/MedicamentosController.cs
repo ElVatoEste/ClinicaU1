@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Clinica.ViewModels;
 using Clinica.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Clinica.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class MedicamentosController : Controller
     {
         private readonly StoredProcedureHelper _helper;

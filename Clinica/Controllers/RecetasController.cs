@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Clinica.Controllers
 {
-    [Authorize(Roles = "Empleado")]
+    [Authorize(Roles = "Empleado, Admin")]
     public class RecetasController : Controller
     {
         private readonly StoredProcedureHelper _helper;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Clinica.Controllers
 {
-    [Authorize(Roles = "Empleado")]
+    [Authorize(Roles = "Admin")]
     public class SecurityController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;

@@ -77,7 +77,7 @@ namespace Clinica.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Empleado")]
+        [Authorize(Roles = "Empleado, Admin")]
         public async Task<IActionResult> Registrar(PacienteViewModel model)
         {
             if (!ModelState.IsValid)
