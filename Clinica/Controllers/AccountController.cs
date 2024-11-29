@@ -58,7 +58,11 @@ namespace Clinica.Controllers
             }
 
             // Crear un nuevo usuario
-            var user = new IdentityUser { UserName = username };
+            var user = new IdentityUser { UserName = username,
+                Email = $"{username}@example.com",
+                EmailConfirmed = true
+            };
+
             var result = await _userManager.CreateAsync(user, password);
 
             if (result.Succeeded)

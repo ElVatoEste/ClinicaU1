@@ -1,6 +1,8 @@
 ﻿using Clinica.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Clinica.Common
@@ -9,11 +11,13 @@ namespace Clinica.Common
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly StoredProcedureHelper _helper;
 
-        public Initializer(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+        public Initializer(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager, StoredProcedureHelper helper)
         {
             _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _helper = helper ?? throw new ArgumentNullException(nameof(helper));
         }
 
         public async Task InitializeAsync()
@@ -22,6 +26,7 @@ namespace Clinica.Common
 
             await InitializeRolesAsync();
             await InitializeUsuariosAsync();
+            await InitializeTiposExamenAsync();
 
             Console.WriteLine($"[{DateTime.Now}] === CONFIGURACIÓN INICIAL COMPLETADA ===");
         }
@@ -48,6 +53,46 @@ namespace Clinica.Common
             Console.WriteLine($"[{DateTime.Now}] Usuarios inicializados.\n");
         }
 
+        private async Task InitializeTiposExamenAsync()
+        {
+            Console.WriteLine($"[{DateTime.Now}] Inicializando tipos de examen...");
+
+            await InsertarTipoExamen("Chequeo Médico General");
+            await InsertarTipoExamen("Evaluaciones Cardiológicas");
+            await InsertarTipoExamen("Biopsias");
+            await InsertarTipoExamen("Endoscopías");
+            await InsertarTipoExamen("Colonoscopías");
+            await InsertarTipoExamen("Ecocardiograma");
+            await InsertarTipoExamen("Electrocardiograma");
+            await InsertarTipoExamen("Resonancia Magnética");
+            await InsertarTipoExamen("Ultrasonidos");
+            await InsertarTipoExamen("Rayos X");
+            await InsertarTipoExamen("Exámenes de Sangre");
+            await InsertarTipoExamen("Exámenes de Orina");
+            await InsertarTipoExamen("Exámenes de Heces");
+
+            Console.WriteLine($"[{DateTime.Now}] Tipos de examen inicializados.\n");
+        }
+
+        private async Task InsertarTipoExamen(string nombreExamen)
+        {
+            try
+            {
+
+                var parameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@NombreExamen", nombreExamen)
+                };
+
+                await _helper.ExecNonQuery("Insertar_TipoExamen", parameters);
+
+                Console.WriteLine($"[{DateTime.Now}] Tipo de examen '{nombreExamen}' procesado.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{DateTime.Now}] Error al insertar tipo de examen '{nombreExamen}': {ex.Message}");
+            }
+        }
         private async Task EnsureRoleExistsAsync(string roleName)
         {
             if (!await _roleManager.RoleExistsAsync(roleName))
@@ -77,7 +122,7 @@ namespace Clinica.Common
                 {
                     UserName = username,
                     Email = $"{username}@example.com",
-                    EmailConfirmed = true 
+                    EmailConfirmed = true
                 };
 
                 var result = await _userManager.CreateAsync(user, password);

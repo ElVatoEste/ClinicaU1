@@ -56,6 +56,7 @@ namespace Clinica.ViewModels
 
     public class PacienteResultado
     {
+        public int PacienteID { get; set; }
         public int ExpedienteID { get; set; }
         public string Nombre { get; set; }
         public string Apellido { get; set; }
@@ -65,4 +66,6 @@ namespace Clinica.ViewModels
         public string Telefono { get; set; }
         public string Correo { get; set; }
     }
+
+
 }

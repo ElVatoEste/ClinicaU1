@@ -9,7 +9,7 @@ using System.Data;
 
 namespace Clinica.Controllers
 {
-    [Authorize(Roles = "Empleado")]
+    [Authorize(Roles = "Empleado, Admin")]
     public class ConsultasMedicasController : Controller
     {
         private readonly StoredProcedureHelper _helper;

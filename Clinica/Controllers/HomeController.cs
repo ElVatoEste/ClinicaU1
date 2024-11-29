@@ -25,8 +25,8 @@ namespace Clinica.Controllers
                     Title = "Gestión de Usuarios",
                     Description = "Administrar usuarios y roles del sistema.",
                     Icon = "fas fa-users",
-                    Link = "/Usuarios/Index",
-                    Roles = new List<string> { "Empleado" }
+                    Link = "/Security/Index",
+                    Roles = new List<string> { "Admin" }
                 },
                 new Card
                 {
@@ -34,7 +34,7 @@ namespace Clinica.Controllers
                     Description = "Registrar y buscar pacientes en el sistema.",
                     Icon = "fas fa-procedures",
                     Link = "/Pacientes/Index",
-                    Roles = new List<string> { "Empleado" }
+                    Roles = new List<string> { "Empleado", "Admin" }
                 },
                 new Card
                 {
@@ -42,7 +42,15 @@ namespace Clinica.Controllers
                     Description = "Registrar y administrar medicamentos.",
                     Icon = "fas fa-capsules",
                     Link = "/Medicamentos/Index",
-                    Roles = new List<string> { "Empleado" }
+                    Roles = new List<string> { "Admin" }
+                },
+                new Card
+                {
+                    Title = "Gestión de Recetas",
+                    Description = "Buscar historial de recetas medicas",
+                    Icon = "fas fa-microscope",
+                    Link = "/Facturas/ListarFacturas",
+                    Roles = new List<string> { "Admin" }
                 }
             };
 

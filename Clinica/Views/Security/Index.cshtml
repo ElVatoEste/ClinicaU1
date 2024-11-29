@@ -1,0 +1,116 @@
+﻿@model Clinica.ViewModels.SecurityViewModel
+
+<div class="container mt-5">
+    <h2 class="text-primary">Gestión de Usuarios y Roles</h2>
+
+    <!-- Pestañas -->
+    <ul class="nav nav-tabs mb-4" id="securityTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">
+                Usuarios
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles" type="button" role="tab" aria-controls="roles" aria-selected="false">
+                Roles
+            </button>
+        </li>
+    </ul>
+
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content" id="securityTabsContent">
+        <!-- Pestaña de Usuarios -->
+        <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+            <h3>Usuarios</h3>
+            <table class="table table-bordered table-hover mt-4">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Roles</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@string.Join(", ", user.Roles)</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#manageRolesModal" data-user-id="@user.UserId" data-email="@user.Email" data-user-roles="@string.Join(",", user.Roles)">
+                                    Administrar Roles
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pestaña de Roles -->
+        <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="roles-tab">
+            <h3>Roles</h3>
+            <ul class="list-group mb-3">
+                @foreach (var role in Model.Roles)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @role
+                    </li>
+                }
+            </ul>
+            <form asp-action="CreateRole" method="post" class="d-flex">
+                @Html.AntiForgeryToken()
+                <input type="text" name="roleName" class="form-control me-2" placeholder="Nuevo rol" required />
+                <button type="submit" class="btn btn-primary">Crear Rol</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para gestionar roles -->
+<div class="modal fade" id="manageRolesModal" tabindex="-1" aria-labelledby="manageRolesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="manageRolesModalLabel">Administrar Roles</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="UpdateRoles" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" id="userId" name="userId" />
+                    <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                    <label for="roles" class="form-label">Roles:</label>
+                    <select id="roles" name="roles" class="form-select" multiple>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <option value="@role">@role</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const manageRolesModal = document.getElementById('manageRolesModal');
+    manageRolesModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const userId = button.getAttribute('data-user-id');
+        const email = button.getAttribute('data-email');
+        const roles = button.getAttribute('data-user-roles').split(',');
+
+        document.getElementById('userId').value = userId;
+        document.getElementById('userEmail').textContent = email;
+
+        const rolesSelect = document.getElementById('roles');
+        [...rolesSelect.options].forEach(option => {
+            option.selected = roles.includes(option.value);
+        });
+    });
+</script>

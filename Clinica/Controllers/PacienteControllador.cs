@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Clinica.Controllers
 {
-    [Authorize(Roles = "Empleado")]
+    [Authorize]
     public class PacientesController : Controller
     {
         private readonly StoredProcedureHelper _helper;
@@ -17,7 +17,7 @@ namespace Clinica.Controllers
             _helper = storedProcedureHelper;
         }
 
-
+        [Authorize(Roles = "Empleado, Admin")]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -31,10 +31,10 @@ namespace Clinica.Controllers
 
             var parameters = new List<SqlParameter>
             {
-                new SqlParameter("@Nombre", DBNull.Value),
-                new SqlParameter("@Apellido", DBNull.Value),
-                new SqlParameter("@FechaNacimiento", DBNull.Value),
-                new SqlParameter("@Identificacion", DBNull.Value)
+                new SqlParameter("@Nombre", DBNull.Value ?? (object)DBNull.Value),
+                new SqlParameter("@Apellido", DBNull.Value ?? (object)DBNull.Value),
+                new SqlParameter("@FechaNacimiento", DBNull.Value ?? (object)DBNull.Value),
+                new SqlParameter("@Identificacion", DBNull.Value ?? (object)DBNull.Value)
             };
 
             try
@@ -50,7 +50,7 @@ namespace Clinica.Controllers
             return View(model);
         }
 
-
+        [Authorize(Roles = "Empleado, Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Buscar(PacienteGestionViewModel model)
@@ -77,6 +77,7 @@ namespace Clinica.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Empleado")]
         public async Task<IActionResult> Registrar(PacienteViewModel model)
         {
             if (!ModelState.IsValid)
@@ -118,7 +119,5 @@ namespace Clinica.Controllers
                 return View("Index", model);
             }
         }
-
-
     }
 }
