@@ -120,6 +120,7 @@
         <form asp-action="AgregarDetalleExamen" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" name="FacturaID" value="@Model.FacturaID" />
+            <input type="hidden" name="PacienteID" value="@Model.PacienteID" />
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalAgregarExamenLabel">Agregar Examen</h5>
@@ -164,6 +165,7 @@
         <form asp-action="AgregarDetalleMedicamento" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" name="FacturaID" value="@Model.FacturaID" />
+            <input type="hidden" name="PacienteID" value="@Model.PacienteID" />
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalAgregarMedicamentoLabel">Agregar Medicamento</h5>

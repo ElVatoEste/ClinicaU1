@@ -2,12 +2,17 @@ using Clinica.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Clinica.Common;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configurar cadena de conexión
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+// Configuración global de cultura
+var cultureInfo = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 // Configurar DbContext para Identity
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -27,6 +32,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
 .AddRoles<IdentityRole>() // Soporte para roles
 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login"; // Página de inicio de sesión
+    options.AccessDeniedPath = "/Account/AccessDenied"; // Página de acceso denegado
+});
 
 // Agregar el inicializador
 builder.Services.AddScoped<Initializer>();

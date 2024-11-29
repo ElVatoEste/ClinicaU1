@@ -28,6 +28,7 @@ namespace Clinica.ViewModels
 
     public class DetalleFacturaExamenViewModel
     {
+        public int PacienteID { get; set; }
         public int FacturaID { get; set; }
         public int DetalleID { get; set; }
         public string Descripcion { get; set; }
@@ -38,6 +39,7 @@ namespace Clinica.ViewModels
 
     public class DetalleFacturaMedicamentoViewModel
     {
+        public int PacienteID { get; set; }
         public int FacturaID { get; set; }
         public int MedicamentoID { get; set; }
         public string Descripcion { get; set; }

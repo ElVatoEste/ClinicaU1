@@ -27,10 +27,10 @@ namespace Clinica.Controllers
             try
             {
                 // Obtener la receta y detalles en una sola consulta
-                var recetaParams = new List<SqlParameter>
-        {
-            new SqlParameter("@DiagnosticoID", diagnosticoId)
-        };
+                        var recetaParams = new List<SqlParameter>
+                {
+                    new SqlParameter("@DiagnosticoID", diagnosticoId)
+                };
 
                 var detallesReceta = await _helper.ExecList<DetalleRecetaViewModel>("Obtener_Receta", recetaParams);
 
@@ -48,9 +48,9 @@ namespace Clinica.Controllers
 
                 // Obtener el ExpedienteID asociado al DiagnosticoID
                 var expedienteParams = new List<SqlParameter>
-        {
-            new SqlParameter("@DiagnosticoID", diagnosticoId)
-        };
+                {
+                    new SqlParameter("@DiagnosticoID", diagnosticoId)
+                };
 
                 receta.ExpedienteID = await _helper.ExecScalar<int>("Obtener_ExpedientePorDiagnostico", expedienteParams);
 
@@ -72,7 +72,6 @@ namespace Clinica.Controllers
                 TempData["Error"] = $"Error al obtener la receta: {ex.Message}";
                 return RedirectToAction("CrearReceta", new { diagnosticoId });
             }
-
             return View(receta);
         }
 

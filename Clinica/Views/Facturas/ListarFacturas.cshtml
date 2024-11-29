@@ -39,8 +39,8 @@
                                         <tr>
                                             <td>@detalle.Descripcion</td>
                                             <td>@detalle.Cantidad</td>
-                                            <td>@string.Format(new CultureInfo("es-CR"), "{0:C}", detalle.PrecioUnitario)</td>
-                                            <td>@string.Format(new CultureInfo("es-CR"), "{0:C}", detalle.Subtotal)</td>
+                                            <td>@string.Format("{0:C}", detalle.PrecioUnitario)</td>
+                                            <td>@string.Format("{0:C}", detalle.Subtotal)</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -62,8 +62,8 @@
                                         <tr>
                                             <td>@medicamento.MedicamentoNombre</td>
                                             <td>@medicamento.Cantidad</td>
-                                            <td>@string.Format(new CultureInfo("es-CR"), "{0:C}", medicamento.PrecioUnitario)</td>
-                                            <td>@string.Format(new CultureInfo("es-CR"), "{0:C}", medicamento.Subtotal)</td>
+                                            <td>@string.Format("{0:C}", medicamento.PrecioUnitario)</td>
+                                            <td>@string.Format("{0:C}", medicamento.Subtotal)</td>
                                         </tr>
                                     }
                                 </tbody>

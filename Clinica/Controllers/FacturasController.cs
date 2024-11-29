@@ -110,7 +110,7 @@ namespace Clinica.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Datos inválidos para agregar examen.";
-                return RedirectToAction("GenerarFactura", new { pacienteId = model.FacturaID });
+                return RedirectToAction("GenerarFactura", new { pacienteId = model.PacienteID });
             }
 
             try
@@ -118,7 +118,7 @@ namespace Clinica.Controllers
                 // Crear el detalle en la tabla Detalles
                 var detalleParameters = new List<SqlParameter>
             {
-                new SqlParameter("@TipoExamenID", model.DetalleID),  // Suponiendo que DetalleID corresponde al tipo de examen
+                new SqlParameter("@TipoExamenID", model.DetalleID),  
                 new SqlParameter("@Descripcion", model.Descripcion),
                 new SqlParameter
                 {
@@ -126,19 +126,19 @@ namespace Clinica.Controllers
                     SqlDbType = SqlDbType.Int,
                     Direction = ParameterDirection.Output
                 }
-            };
+                  };
 
                     await _helper.ExecNonQuery("Crear_Detalle", detalleParameters);
                     var detalleId = (int)detalleParameters.Find(p => p.ParameterName == "@DetalleID").Value;
 
                     // Ahora insertar el detalle en la factura
                     var facturaParameters = new List<SqlParameter>
-            {
-                new SqlParameter("@FacturaID", model.FacturaID),
-                new SqlParameter("@DetalleID", detalleId),
-                new SqlParameter("@Cantidad", model.Cantidad),
-                new SqlParameter("@PrecioUnitario", model.PrecioUnitario)
-            };
+                {
+                    new SqlParameter("@FacturaID", model.FacturaID),
+                    new SqlParameter("@DetalleID", detalleId),
+                    new SqlParameter("@Cantidad", model.Cantidad),
+                    new SqlParameter("@PrecioUnitario", model.PrecioUnitario)
+                };
 
                 await _helper.ExecNonQuery("Agregar_DetalleFactura", facturaParameters);
 
@@ -149,7 +149,7 @@ namespace Clinica.Controllers
                 TempData["Error"] = $"Error al agregar examen: {ex.Message}";
             }
 
-            return RedirectToAction("GenerarFactura", new { pacienteId = model.FacturaID });
+            return RedirectToAction("GenerarFactura", new { pacienteId = model.PacienteID });
         }
 
         [Authorize(Roles = "Admin, Empleado")]
@@ -160,7 +160,7 @@ namespace Clinica.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Datos inválidos para agregar medicamento.";
-                return RedirectToAction("GenerarFactura", new { pacienteId = model.FacturaID });
+                return RedirectToAction("GenerarFactura", new { pacienteId = model.PacienteID });
             }
 
             try
@@ -182,7 +182,7 @@ namespace Clinica.Controllers
                 TempData["Error"] = $"Error al agregar medicamento: {ex.Message}";
             }
 
-            return RedirectToAction("GenerarFactura", new { pacienteId = model.FacturaID });
+            return RedirectToAction("GenerarFactura", new { pacienteId = model.PacienteID });
         }
 
         [Authorize(Roles = "Admin")]
