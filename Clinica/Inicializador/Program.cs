@@ -48,9 +48,6 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Ejecutar migraciones automáticamente (opcional)
-await ApplyMigrationsAsync(app);
-
 // Ejecutar el inicializador
 await InitializeAppAsync(app);
 
@@ -70,26 +67,6 @@ app.MapControllerRoute(
 
 // Ejecutar la aplicación
 app.Run();
-
-// Función para aplicar migraciones automáticamente (opcional)
-static async Task ApplyMigrationsAsync(WebApplication app)
-{
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        if (context.Database.IsSqlServer())
-        {
-            await context.Database.MigrateAsync();
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error al aplicar migraciones: {ex.Message}");
-        throw;
-    }
-}
 
 // Función para ejecutar la inicialización de roles y usuarios
 static async Task InitializeAppAsync(WebApplication app)

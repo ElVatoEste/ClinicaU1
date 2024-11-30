@@ -43,6 +43,7 @@
                             <td class="text-center">
                                 <form asp-action="EliminarMedicamento" method="post" style="display:inline;">
                                     @Html.AntiForgeryToken()
+                                    <input type="hidden" name="DiagnosticoID" value="@Model.DiagnosticoID" />
                                     <input type="hidden" name="recetaId" value="@Model.RecetaID" />
                                     <input type="hidden" name="medicamentoId" value="@detalle.MedicamentoID" />
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este medicamento?');">

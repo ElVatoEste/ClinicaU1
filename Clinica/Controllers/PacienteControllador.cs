@@ -23,12 +23,6 @@ namespace Clinica.Controllers
         {
             var model = new PacienteGestionViewModel();
 
-            // Asignar la fecha actual si no se ha establecido
-            if (!model.FechaNacimientoBusqueda.HasValue)
-            {
-                model.FechaNacimientoBusqueda = DateTime.Now.Date;
-            }
-
             var parameters = new List<SqlParameter>
             {
                 new SqlParameter("@Nombre", DBNull.Value ?? (object)DBNull.Value),

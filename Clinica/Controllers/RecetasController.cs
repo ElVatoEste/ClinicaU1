@@ -120,13 +120,13 @@ namespace Clinica.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EliminarMedicamento(int recetaId, int medicamentoId)
+        public async Task<IActionResult> EliminarMedicamento(int recetaId, int medicamentoId, int DiagnosticoID)
         {
             var parameters = new List<SqlParameter>
-    {
-        new SqlParameter("@RecetaID", recetaId),
-        new SqlParameter("@MedicamentoID", medicamentoId)
-    };
+            {
+                new SqlParameter("@RecetaID", recetaId),
+                new SqlParameter("@MedicamentoID", medicamentoId)
+            };
 
             try
             {
@@ -138,7 +138,7 @@ namespace Clinica.Controllers
                 TempData["Error"] = $"Error al eliminar el medicamento: {ex.Message}";
             }
 
-            return RedirectToAction("VerReceta", new { diagnosticoId = recetaId });
+            return RedirectToAction("VerReceta", new { diagnosticoId = DiagnosticoID });
         }
 
 
